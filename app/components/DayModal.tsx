@@ -86,60 +86,7 @@ export default function DayModal({
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
-          {/* Habits section — show for all days */}
-          {habits.length > 0 && (
-            <div>
-              <p className="text-xs font-semibold text-stone-500 uppercase tracking-widest mb-2">
-                Daily Habits
-                {isPastDay && (
-                  <span className="ml-2 normal-case font-normal text-stone-600">
-                    (historical data)
-                  </span>
-                )}
-              </p>
-              <ul className="space-y-1.5">
-                {habits.map((h) => {
-                  // For today, use habitDoneMap; for other dates, we'd need date-specific data
-                  // Since we don't have that structure, we'll show habits as checkable only for today
-                  const done = isTodayDay ? (habitDoneMap[h.id] || false) : false;
-                  const canToggle = isTodayDay && onToggleHabit;
-
-                  return (
-                    <li
-                      key={h.id}
-                      className={`flex items-center gap-2.5 px-3 py-2 rounded-xl
-                        ${done ? "bg-amber-400/10 opacity-70" : "bg-stone-800/50"}`}
-                    >
-                      <button
-                        onClick={() => canToggle && handleToggleHabit(h.id)}
-                        disabled={!canToggle}
-                        className={`w-4 h-4 rounded flex items-center justify-center border transition-all
-                          ${done ? "bg-amber-400 border-amber-400" : "border-stone-600"}
-                          ${canToggle ? "cursor-pointer hover:border-amber-400" : "cursor-default opacity-50"}`}
-                      >
-                        {done && <Check size={10} strokeWidth={3} className="text-stone-900" />}
-                      </button>
-                      <span className={`text-sm flex-1 ${done ? "line-through text-stone-500" : "text-stone-300"}`}>
-                        {h.text}
-                      </span>
-                      {!isTodayDay && (
-                        <span className="text-xs text-stone-600 italic">
-                          {isPastDay ? "no data" : "future"}
-                        </span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-              {!isTodayDay && (
-                <p className="text-[10px] text-stone-600 mt-2 italic">
-                  Note: Habit tracking is currently only available for today. Historical tracking coming soon!
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Todos section */}
+          {/* Todos section - NOW FIRST */}
           <div>
             <p className="text-xs font-semibold text-stone-500 uppercase tracking-widest mb-2">
               Tasks
@@ -215,6 +162,59 @@ export default function DayModal({
               </div>
             )}
           </div>
+
+          {/* Habits section - NOW SECOND */}
+          {habits.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-stone-500 uppercase tracking-widest mb-2">
+                Daily Habits
+                {isPastDay && (
+                  <span className="ml-2 normal-case font-normal text-stone-600">
+                    (historical data)
+                  </span>
+                )}
+              </p>
+              <ul className="space-y-1.5">
+                {habits.map((h) => {
+                  // For today, use habitDoneMap; for other dates, we'd need date-specific data
+                  // Since we don't have that structure, we'll show habits as checkable only for today
+                  const done = isTodayDay ? (habitDoneMap[h.id] || false) : false;
+                  const canToggle = isTodayDay && onToggleHabit;
+
+                  return (
+                    <li
+                      key={h.id}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-xl
+                        ${done ? "bg-amber-400/10 opacity-70" : "bg-stone-800/50"}`}
+                    >
+                      <button
+                        onClick={() => canToggle && handleToggleHabit(h.id)}
+                        disabled={!canToggle}
+                        className={`w-4 h-4 rounded flex items-center justify-center border transition-all
+                          ${done ? "bg-amber-400 border-amber-400" : "border-stone-600"}
+                          ${canToggle ? "cursor-pointer hover:border-amber-400" : "cursor-default opacity-50"}`}
+                      >
+                        {done && <Check size={10} strokeWidth={3} className="text-stone-900" />}
+                      </button>
+                      <span className={`text-sm flex-1 ${done ? "line-through text-stone-500" : "text-stone-300"}`}>
+                        {h.text}
+                      </span>
+                      {!isTodayDay && (
+                        <span className="text-xs text-stone-600 italic">
+                          {isPastDay ? "no data" : "future"}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+              {!isTodayDay && (
+                <p className="text-[10px] text-stone-600 mt-2 italic">
+                  Note: Habit tracking is currently only available for today. Historical tracking coming soon!
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

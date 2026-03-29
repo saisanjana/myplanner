@@ -109,10 +109,28 @@ export default function Dashboard() {
 
         {/* Dashboard View */}
         {activeTab === "dashboard" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* ── Column 1: Habits + Today Todos ── */}
-            <div className="space-y-4">
-              {/* Habits - Now Collapsible */}
+          <div className="space-y-4">
+            {/* ── Row 1: Today's Tasks + Daily Habits ── */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Today's todos - LEFT */}
+              <SectionCard
+                title="Today's Tasks"
+                icon="✅"
+                accentColor="#3b82f6"
+                badge={`${planner.todos.filter(t => t.done).length}/${planner.todos.length}`}
+                collapsible={true}
+                defaultCollapsed={false}
+              >
+                <TodayTodos
+                  todos={planner.todos}
+                  onToggle={planner.toggleTodo}
+                  onAdd={planner.addTodo}
+                  onDelete={planner.deleteTodo}
+                  onEdit={planner.editTodo}
+                />
+              </SectionCard>
+
+              {/* Habits - RIGHT */}
               <SectionCard
                 title="Daily Habits"
                 icon="🔁"
@@ -130,30 +148,12 @@ export default function Dashboard() {
                   onEdit={planner.editHabit}
                 />
               </SectionCard>
-
-              {/* Today's todos - Now Collapsible */}
-              <SectionCard
-                title="Today's Tasks"
-                icon="✅"
-                accentColor="#3b82f6"
-                badge={`${planner.todos.filter(t => t.done).length}/${planner.todos.length}`}
-                collapsible={true}
-                defaultCollapsed={false}
-              >
-                <TodayTodos
-                  todos={planner.todos}
-                  onToggle={planner.toggleTodo}
-                  onAdd={planner.addTodo}
-                  onDelete={planner.deleteTodo}
-                  onEdit={planner.editTodo}
-                />
-              </SectionCard>
             </div>
 
-            {/* ── Column 2: Custom Lists ── */}
-            <div className="space-y-4">
+            {/* ── Row 2: Custom Lists ── */}
+            <div>
               {/* Custom lists header */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-semibold text-stone-400 uppercase tracking-widest">
                   My Lists
                 </h2>
@@ -179,7 +179,7 @@ export default function Dashboard() {
                   </button>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                   {planner.lists.map((list) => (
                     <CollapsibleList
                       key={list.id}

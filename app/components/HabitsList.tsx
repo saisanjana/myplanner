@@ -61,7 +61,7 @@ export default function HabitsList({ habits, doneMap, onToggle, onAdd, onDelete,
 
       {/* Habits Grid - Tile Layout */}
       {habits.length > 0 ? (
-        <div className="grid grid-cols-2 gap-2.5 mb-4">
+        <div className="grid grid-cols-3 gap-2.5 mb-4">
           {habits.map((h) => {
             const done = doneMap[h.id] || false;
             return (
@@ -157,4 +157,4 @@ export default function HabitsList({ habits, doneMap, onToggle, onAdd, onDelete,
       </div>
     </div>
   );
-} 
+}
