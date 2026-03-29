@@ -73,8 +73,11 @@ export async function getTodosForDate(date: string): Promise<Todo[]> {
 }
 
 export async function getTodosForMonth(year: number, month: number): Promise<Todo[]> {
-  const startDate = `${year}-${String(month + 1).padStart(2, "0")}-01`;
-  const endDate = `${year}-${String(month + 1).padStart(2, "0")}-31`;
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0); // ← magic line
+
+  const startDate = firstDay.toISOString().slice(0, 10);
+  const endDate = lastDay.toISOString().slice(0, 10);
   const { data, error } = await supabase
     .from("todos")
     .select("*")
