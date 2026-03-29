@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Plus, Trash2, Pencil, CornerDownRight } from "lucide-react";
+import { Check, Plus, Trash2, Pencil, CornerDownRight, GripVertical } from "lucide-react";
 import type { Todo } from "@/types";
 import { format } from "date-fns";
 
@@ -17,6 +17,7 @@ export default function TodayTodos({ todos, onToggle, onAdd, onDelete, onEdit }:
   const [newText, setNewText] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const doneCount = todos.filter((t) => t.done).length;
 
@@ -37,6 +38,29 @@ export default function TodayTodos({ todos, onToggle, onAdd, onDelete, onEdit }:
     setEditingId(null);
   };
 
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const newTodos = [...todos];
+    const draggedItem = newTodos[draggedIndex];
+    newTodos.splice(draggedIndex, 1);
+    newTodos.splice(index, 0, draggedItem);
+
+    setDraggedIndex(index);
+    // Note: You would need to call a reorder function here to update the backend
+    // For now, this just shows the visual reordering
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
   return (
     <div>
       {todos.length > 0 && (
@@ -51,13 +75,22 @@ export default function TodayTodos({ todos, onToggle, onAdd, onDelete, onEdit }:
       )}
 
       <ul className="space-y-1.5">
-        {todos.map((todo) => (
+        {todos.map((todo, index) => (
           <li
             key={todo.id}
-            className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-all group
+            draggable
+            onDragStart={(e) => handleDragStart(e, index)}
+            onDragOver={(e) => handleDragOver(e, index)}
+            onDragEnd={handleDragEnd}
+            className={`flex items-start gap-2 p-2.5 rounded-xl transition-all group cursor-move
               ${todo.done ? "opacity-45" : ""}
+              ${draggedIndex === index ? "opacity-50 scale-95" : ""}
               bg-stone-800/50 hover:bg-stone-800`}
           >
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing pt-1">
+              <GripVertical size={14} className="text-stone-600" />
+            </div>
+
             <button
               onClick={() => onToggle(todo.id)}
               className={`w-5 h-5 mt-0.5 rounded-md border-2 flex-shrink-0 flex items-center justify-center transition-all

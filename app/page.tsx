@@ -109,10 +109,9 @@ export default function Dashboard() {
 
         {/* Dashboard View */}
         {activeTab === "dashboard" && (
-          <div className="space-y-4">
-            {/* ── Row 1: Today's Tasks + Daily Habits ── */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Today's todos - LEFT */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+            {/* ── Left Column: Today's Tasks ── */}
+            <div>
               <SectionCard
                 title="Today's Tasks"
                 icon="✅"
@@ -129,8 +128,11 @@ export default function Dashboard() {
                   onEdit={planner.editTodo}
                 />
               </SectionCard>
+            </div>
 
-              {/* Habits - RIGHT */}
+            {/* ── Right Column: Daily Habits + Lists ── */}
+            <div className="space-y-4">
+              {/* Habits */}
               <SectionCard
                 title="Daily Habits"
                 icon="🔁"
@@ -148,53 +150,52 @@ export default function Dashboard() {
                   onEdit={planner.editHabit}
                 />
               </SectionCard>
-            </div>
 
-            {/* ── Row 2: Custom Lists ── */}
-            <div>
-              {/* Custom lists header */}
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-semibold text-stone-400 uppercase tracking-widest">
-                  My Lists
-                </h2>
-                <button
-                  onClick={() => setShowAddList(true)}
-                  className="flex items-center gap-1.5 text-xs bg-stone-800 hover:bg-stone-700
-                    text-stone-300 px-3 py-1.5 rounded-xl transition-colors"
-                >
-                  <Plus size={13} />
-                  New List
-                </button>
-              </div>
-
-              {planner.lists.length === 0 ? (
-                <div className="bg-stone-900 border border-stone-800 border-dashed rounded-2xl p-8 text-center">
-                  <p className="text-stone-600 text-sm mb-1">No lists yet</p>
-                  <p className="text-stone-700 text-xs">Create lists for shopping, ideas, goals, etc.</p>
+              {/* Custom Lists */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-sm font-semibold text-stone-400 uppercase tracking-widest">
+                    My Lists
+                  </h2>
                   <button
                     onClick={() => setShowAddList(true)}
-                    className="mt-3 text-xs bg-stone-800 hover:bg-stone-700 text-stone-400 px-3 py-1.5 rounded-xl transition-colors"
+                    className="flex items-center gap-1.5 text-xs bg-stone-800 hover:bg-stone-700
+                      text-stone-300 px-3 py-1.5 rounded-xl transition-colors"
                   >
-                    + Create first list
+                    <Plus size={13} />
+                    New List
                   </button>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                  {planner.lists.map((list) => (
-                    <CollapsibleList
-                      key={list.id}
-                      list={list}
-                      items={planner.listItems[list.id] || []}
-                      onAddItem={planner.addListItem}
-                      onToggleItem={planner.toggleListItem}
-                      onDeleteItem={planner.deleteListItem}
-                      onEditItem={planner.editListItem}
-                      onDeleteList={planner.deleteList}
-                      defaultCollapsed={true}
-                    />
-                  ))}
-                </div>
-              )}
+
+                {planner.lists.length === 0 ? (
+                  <div className="bg-stone-900 border border-stone-800 border-dashed rounded-2xl p-8 text-center">
+                    <p className="text-stone-600 text-sm mb-1">No lists yet</p>
+                    <p className="text-stone-700 text-xs">Create lists for shopping, ideas, goals, etc.</p>
+                    <button
+                      onClick={() => setShowAddList(true)}
+                      className="mt-3 text-xs bg-stone-800 hover:bg-stone-700 text-stone-400 px-3 py-1.5 rounded-xl transition-colors"
+                    >
+                      + Create first list
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {planner.lists.map((list) => (
+                      <CollapsibleList
+                        key={list.id}
+                        list={list}
+                        items={planner.listItems[list.id] || []}
+                        onAddItem={planner.addListItem}
+                        onToggleItem={planner.toggleListItem}
+                        onDeleteItem={planner.deleteListItem}
+                        onEditItem={planner.editListItem}
+                        onDeleteList={planner.deleteList}
+                        defaultCollapsed={true}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

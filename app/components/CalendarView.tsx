@@ -101,7 +101,7 @@ export default function CalendarView({
             <button
               key={dateStr}
               onClick={() => setSelectedDate(dateStr)}
-              className={`relative flex flex-col p-2 rounded-lg border transition-all min-h-[100px] text-left
+              className={`relative flex flex-col p-2 rounded-lg border transition-all min-h-[60px] md:min-h-[100px] text-left
                 ${!inMonth ? "opacity-30 bg-stone-900/30" : "bg-stone-900/50"}
                 ${today ? "ring-2 ring-amber-400/60 border-amber-400/40 bg-amber-400/5" : "border-stone-800"}
                 hover:border-stone-700 hover:bg-stone-800/70
@@ -116,9 +116,9 @@ export default function CalendarView({
                 {format(day, "d")}
               </span>
 
-              {/* Tasks list */}
+              {/* Tasks list - Hidden on mobile, visible on tablet+ */}
               {visibleTodos.length > 0 && (
-                <div className="space-y-1 flex-1">
+                <div className="hidden md:block space-y-1 flex-1">
                   {visibleTodos.map((todo) => (
                     <div
                       key={todo.id}

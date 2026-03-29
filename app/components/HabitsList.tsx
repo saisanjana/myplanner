@@ -91,19 +91,19 @@ export default function HabitsList({ habits, doneMap, onToggle, onAdd, onDelete,
                   <>
                     <button
                       onClick={() => onToggle(h.id)}
-                      className="w-full p-3 text-left"
+                      className="w-full p-3 text-center"
                     >
-                      <div className="flex items-start gap-2.5">
+                      <div className="flex flex-col items-center gap-2">
                         <div
-                          className={`w-5 h-5 mt-0.5 rounded-md border-2 flex-shrink-0 flex items-center justify-center transition-all
+                          className={`w-6 h-6 rounded-md border-2 flex-shrink-0 flex items-center justify-center transition-all
                             ${done
                               ? "bg-amber-400 border-amber-400"
                               : "border-stone-600"
                             }`}
                         >
-                          {done && <Check size={12} strokeWidth={3} className="text-stone-900" />}
+                          {done && <Check size={14} strokeWidth={3} className="text-stone-900" />}
                         </div>
-                        <span className={`text-sm leading-snug min-h-[2.5rem] flex items-center
+                        <span className={`text-xs leading-tight text-center
                           ${done ? "line-through text-stone-500" : "text-stone-200"}`}>
                           {h.text}
                         </span>
