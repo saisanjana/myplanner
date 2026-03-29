@@ -14,23 +14,25 @@ interface Props {
   onToggleTodo: (id: string, date: string) => void;
   onAddTodo: (text: string, date: string) => void;
   onDeleteTodo: (id: string) => void;
+  onToggleHabit?: (id: string, date?: string) => void;
 }
 
 export default function DayModal({
   date,
   todos,
   habits,
-  habitDoneMap,
+  habitDoneMap = {},
   onClose,
   onToggleTodo,
   onAddTodo,
   onDeleteTodo,
+  onToggleHabit,
 }: Props) {
   const [newText, setNewText] = useState("");
   const dateObj = new Date(date + "T12:00:00");
   const isPastDay = isPast(dateObj) && !isToday(dateObj);
   const isTodayDay = isToday(dateObj);
-  const isFutureDay = isFuture(dateObj);
+  const isFutureDay = isFuture(dateObj) && !isToday(dateObj);
 
   const doneTodos = todos.filter((t) => t.done);
   const undoneTodos = todos.filter((t) => !t.done);
@@ -40,6 +42,13 @@ export default function DayModal({
     if (!t) return;
     onAddTodo(t, date);
     setNewText("");
+  };
+
+  const handleToggleHabit = (habitId: string) => {
+    if (onToggleHabit) {
+      // For today, toggle normally. For other dates, you might need date-specific logic
+      onToggleHabit(habitId, date);
+    }
   };
 
   // Close on escape
@@ -82,33 +91,51 @@ export default function DayModal({
             <div>
               <p className="text-xs font-semibold text-stone-500 uppercase tracking-widest mb-2">
                 Daily Habits
+                {isPastDay && (
+                  <span className="ml-2 normal-case font-normal text-stone-600">
+                    (historical data)
+                  </span>
+                )}
               </p>
               <ul className="space-y-1.5">
                 {habits.map((h) => {
-                  const done = habitDoneMap?.[h.id] || false;
+                  // For today, use habitDoneMap; for other dates, we'd need date-specific data
+                  // Since we don't have that structure, we'll show habits as checkable only for today
+                  const done = isTodayDay ? (habitDoneMap[h.id] || false) : false;
+                  const canToggle = isTodayDay && onToggleHabit;
+
                   return (
                     <li
                       key={h.id}
-                      className={`flex items-center gap-2.5 px-3 py-2 rounded-xl bg-stone-800/50 ${done ? "opacity-50" : ""}`}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-xl
+                        ${done ? "bg-amber-400/10 opacity-70" : "bg-stone-800/50"}`}
                     >
-                      <div
-                        className={`w-4 h-4 rounded flex items-center justify-center border
-                          ${done ? "bg-amber-400 border-amber-400" : "border-stone-600"}`}
+                      <button
+                        onClick={() => canToggle && handleToggleHabit(h.id)}
+                        disabled={!canToggle}
+                        className={`w-4 h-4 rounded flex items-center justify-center border transition-all
+                          ${done ? "bg-amber-400 border-amber-400" : "border-stone-600"}
+                          ${canToggle ? "cursor-pointer hover:border-amber-400" : "cursor-default opacity-50"}`}
                       >
                         {done && <Check size={10} strokeWidth={3} className="text-stone-900" />}
-                      </div>
-                      <span className={`text-sm ${done ? "line-through text-stone-500" : "text-stone-300"}`}>
+                      </button>
+                      <span className={`text-sm flex-1 ${done ? "line-through text-stone-500" : "text-stone-300"}`}>
                         {h.text}
                       </span>
-                      {isPastDay && (
-                        <span className={`ml-auto text-xs ${done ? "text-green-500" : "text-red-500/70"}`}>
-                          {done ? "✓" : "✗"}
+                      {!isTodayDay && (
+                        <span className="text-xs text-stone-600 italic">
+                          {isPastDay ? "no data" : "future"}
                         </span>
                       )}
                     </li>
                   );
                 })}
               </ul>
+              {!isTodayDay && (
+                <p className="text-[10px] text-stone-600 mt-2 italic">
+                  Note: Habit tracking is currently only available for today. Historical tracking coming soon!
+                </p>
+              )}
             </div>
           )}
 
