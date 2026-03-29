@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Check, Plus, Trash2, Pencil, CornerDownRight, GripVertical } from "lucide-react";
 import type { Todo } from "@/types";
 import { format } from "date-fns";
@@ -18,6 +18,8 @@ export default function TodayTodos({ todos, onToggle, onAdd, onDelete, onEdit }:
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const dragItemRef = useRef<HTMLLIElement | null>(null);
 
   const doneCount = todos.filter((t) => t.done).length;
 
@@ -38,6 +40,7 @@ export default function TodayTodos({ todos, onToggle, onAdd, onDelete, onEdit }:
     setEditingId(null);
   };
 
+  // Mouse/Desktop drag handlers
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = "move";
@@ -54,11 +57,49 @@ export default function TodayTodos({ todos, onToggle, onAdd, onDelete, onEdit }:
 
     setDraggedIndex(index);
     // Note: You would need to call a reorder function here to update the backend
-    // For now, this just shows the visual reordering
   };
 
   const handleDragEnd = () => {
     setDraggedIndex(null);
+  };
+
+  // Touch/Mobile drag handlers
+  const handleTouchStart = (e: React.TouchEvent, index: number) => {
+    const touch = e.touches[0];
+    setTouchStartY(touch.clientY);
+    setDraggedIndex(index);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent, index: number) => {
+    if (draggedIndex === null || touchStartY === null) return;
+    
+    const touch = e.touches[0];
+    const currentY = touch.clientY;
+    const deltaY = currentY - touchStartY;
+    
+    // Determine if we should swap items based on position
+    const itemHeight = 60; // approximate height of each item
+    const itemsToMove = Math.round(deltaY / itemHeight);
+    
+    if (itemsToMove !== 0) {
+      const newIndex = Math.max(0, Math.min(todos.length - 1, draggedIndex + itemsToMove));
+      
+      if (newIndex !== draggedIndex) {
+        const newTodos = [...todos];
+        const draggedItem = newTodos[draggedIndex];
+        newTodos.splice(draggedIndex, 1);
+        newTodos.splice(newIndex, 0, draggedItem);
+        
+        setDraggedIndex(newIndex);
+        setTouchStartY(currentY);
+        // Note: You would need to call a reorder function here
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setDraggedIndex(null);
+    setTouchStartY(null);
   };
 
   return (
@@ -78,13 +119,17 @@ export default function TodayTodos({ todos, onToggle, onAdd, onDelete, onEdit }:
         {todos.map((todo, index) => (
           <li
             key={todo.id}
+            ref={draggedIndex === index ? dragItemRef : null}
             draggable
             onDragStart={(e) => handleDragStart(e, index)}
             onDragOver={(e) => handleDragOver(e, index)}
             onDragEnd={handleDragEnd}
-            className={`flex items-start gap-2 p-2.5 rounded-xl transition-all group cursor-move
+            onTouchStart={(e) => handleTouchStart(e, index)}
+            onTouchMove={(e) => handleTouchMove(e, index)}
+            onTouchEnd={handleTouchEnd}
+            className={`flex items-start gap-2 p-2.5 rounded-xl transition-all group cursor-move touch-none
               ${todo.done ? "opacity-45" : ""}
-              ${draggedIndex === index ? "opacity-50 scale-95" : ""}
+              ${draggedIndex === index ? "opacity-50 scale-95 shadow-lg" : ""}
               bg-stone-800/50 hover:bg-stone-800`}
           >
             <div className="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing pt-1">

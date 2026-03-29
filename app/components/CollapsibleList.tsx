@@ -84,7 +84,28 @@ export default function CollapsibleList({
       {/* Body */}
       {!collapsed && (
         <div className="px-4 pb-4 bg-stone-900/30">
-          <ul className="space-y-1.5 mt-2">
+          {/* Add new item - NOW FIRST */}
+          <div className="flex gap-2 mb-3">
+            <input
+              className="flex-1 bg-stone-800 border border-stone-700 rounded-xl px-3 py-1.5 text-sm
+                text-stone-200 placeholder-stone-500 outline-none transition-colors"
+              style={{ "--tw-ring-color": list.color } as React.CSSProperties}
+              placeholder={`Add to ${list.title}...`}
+              value={newText}
+              onChange={(e) => setNewText(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+            />
+            <button
+              onClick={handleAdd}
+              className="px-3 py-1.5 rounded-xl font-semibold text-sm transition-colors text-stone-900"
+              style={{ backgroundColor: list.color }}
+            >
+              <Plus size={14} />
+            </button>
+          </div>
+
+          {/* List items */}
+          <ul className="space-y-1.5">
             {sortedItems.map((item) => (
               <li
                 key={item.id}
@@ -140,28 +161,9 @@ export default function CollapsibleList({
             ))}
 
             {items.length === 0 && (
-              <p className="text-stone-600 text-xs text-center py-2">Empty — add something below</p>
+              <p className="text-stone-600 text-xs text-center py-2">Empty — add something above</p>
             )}
           </ul>
-
-          <div className="flex gap-2 mt-3">
-            <input
-              className="flex-1 bg-stone-800 border border-stone-700 rounded-xl px-3 py-1.5 text-sm
-                text-stone-200 placeholder-stone-500 outline-none transition-colors"
-              style={{ "--tw-ring-color": list.color } as React.CSSProperties}
-              placeholder={`Add to ${list.title}...`}
-              value={newText}
-              onChange={(e) => setNewText(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            />
-            <button
-              onClick={handleAdd}
-              className="px-3 py-1.5 rounded-xl font-semibold text-sm transition-colors text-stone-900"
-              style={{ backgroundColor: list.color }}
-            >
-              <Plus size={14} />
-            </button>
-          </div>
 
           <div className="mt-3 pt-3 border-t border-stone-800 flex justify-end">
             {confirmDelete ? (
